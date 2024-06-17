@@ -1,19 +1,51 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <fstream>
+#include <vector>
 
+void loadShapes(const std::string& fileName)
+{
+	const std::string font = "Font";
+	const std::string circle = "Circle";
+	const std::string rect = "Rectangle";
+
+	/*while (fin >> line)
+	{
+		if (line.compare(font) == 0)
+		{
+
+		}
+
+		std::cout << line << "\n";
+	}*/
+
+}
 int main(int argc, char* argv[])
 {
-	// create a new window of size 400 by 400 pixels
-	// top-left of window is (0,0) and bottom-right is (w,h)
-	const int wWidth = 1280;
-	const int wHeight = 720;
-	sf::RenderWindow window(sf::VideoMode(wWidth, wHeight), "SFML works!");
+	std::ifstream fin("config.txt");
+	std::string line;
+
+	// 1) INIT WINDOW
+	fin >> line;	// first line will just be "Window"
+
+	int wWidth = 0;
+	int wHeight = 0;
+
+	fin >> wWidth;
+	fin >> wHeight;
+
+	sf::RenderWindow window(sf::VideoMode(wWidth, wHeight), "Assignment 1: Bouncing Shapes");
+	window.setFramerateLimit(60);
+
+
 
 	// let's make a shape that we will draw to the screen
 	sf::CircleShape circle(50);				// create a circle shape with radius 50
 	circle.setFillColor(sf::Color::Green);	// set the circle color to green
+	// how to specify rgb color: circle.setFillColor(sf::Color(r, g, b));
+
 	circle.setPosition(300.0f, 300.0f);		// set the top-left position of the circle
-	float circleMoveSpeed = 0.01f;			// we will use this to move the circle later
+	float circleMoveSpeed = 0.1f;			// we will use this to move the circle later
 
 	// let's load a font so we can display some text
 	sf::Font myFont;
@@ -22,7 +54,7 @@ int main(int argc, char* argv[])
 	if (!myFont.loadFromFile("fonts/tech.ttf"))
 	{
 		// if we can't load the font, print an error to the error console and exit
-		std::cerr << "Count not load font!\n";
+		std::cerr << "Could not load font!\n";
 		exit(-1);
 	}
 
@@ -62,7 +94,7 @@ int main(int argc, char* argv[])
 		}
 
 		// basic animation - move each frame if it's still in frame
-		circle.setPosition(circle.getPosition().x - circleMoveSpeed, circle.getPosition().y - circleMoveSpeed);
+		circle.setPosition(circle.getPosition().x + circleMoveSpeed, circle.getPosition().y + circleMoveSpeed);
 
 		// basic rendering function calls
 		window.clear();			// clear the window of anything previously drawn
