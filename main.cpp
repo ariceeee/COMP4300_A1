@@ -3,10 +3,37 @@
 #include <fstream>
 #include <vector>
 
+class AnimCircle
+{
+	sf::CircleShape m_circle;
+	std::string m_name;
+	sf::Vector2f m_speed;
+
+public:
+	AnimCircle(std::string name, sf::Vector2f pos, sf::Vector2f speed, sf::Color color, int radius)
+		: m_name(name)
+		, m_speed(speed)
+	{
+		m_circle.setPosition(pos);
+		m_circle.setFillColor(color);
+		m_circle.setRadius(radius);
+	}
+
+	void draw(sf::RenderWindow& window)
+	{
+		window.draw(m_circle);
+
+		// todo: draw shape name
+	}
+};
+
 // vars
 sf::Font font;
 int fontSize;
 sf::Color fontColor;
+
+std::vector<AnimCircle> circles;
+std::vector<sf::RectangleShape> rects;
 
 void loadShapes(std::ifstream& fin)
 {
@@ -41,6 +68,32 @@ void loadShapes(std::ifstream& fin)
 				exit(-1);
 			}
 		}
+		else if (line.compare(CIRCLE) == 0)
+		{
+			std::string name;
+			sf::Vector2f pos, speed;
+			int r, g, b;
+			int radius;
+
+			fin >> name;
+			fin >> pos.x;
+			fin >> pos.y;
+			fin >> speed.x;
+			fin >> speed.y;
+			fin >> r;
+			fin >> g;
+			fin >> b;
+			fin >> radius;
+
+			std::cout << "name: " << name << ", pos.x: " << pos.x << ", pos.y: " << pos.y << "\n";
+
+			AnimCircle c(name, pos, speed, sf::Color(r, g, b), radius);
+			circles.push_back(c);
+		}
+		else if (line.compare(RECT) == 0)
+		{
+
+		}
 
 	}
 
@@ -67,13 +120,12 @@ int main(int argc, char* argv[])
 
 
 	// let's make a shape that we will draw to the screen
-	sf::CircleShape circle(50);				// create a circle shape with radius 50
-	circle.setFillColor(sf::Color::Green);	// set the circle color to green
-	// how to specify rgb color: circle.setFillColor(sf::Color(r, g, b));
+	//sf::CircleShape circle(50);				// create a circle shape with radius 50
+	//circle.setFillColor(sf::Color::Green);	// set the circle color to green
+	//// how to specify rgb color: circle.setFillColor(sf::Color(r, g, b));
 
-	circle.setPosition(300.0f, 300.0f);		// set the top-left position of the circle
-	float circleMoveSpeed = 0.1f;			// we will use this to move the circle later
-
+	//circle.setPosition(300.0f, 300.0f);		// set the top-left position of the circle
+	//float circleMoveSpeed = 0.1f;			// we will use this to move the circle later
 
 	// set up the text object that will be drawn to the screen
 	sf::Text text("Sample Text", font, fontSize);
@@ -106,18 +158,23 @@ int main(int argc, char* argv[])
 				if (event.key.code == sf::Keyboard::X)
 				{
 					// reverse the direction of the circle on the screen
-					circleMoveSpeed *= -1.0f;
+					//circleMoveSpeed *= -1.0f;
 				}
 			}
 		}
 
 		// basic animation - move each frame if it's still in frame
-		circle.setPosition(circle.getPosition().x + circleMoveSpeed, circle.getPosition().y + circleMoveSpeed);
+		//circle.setPosition(circle.getPosition().x + circleMoveSpeed, circle.getPosition().y + circleMoveSpeed);
 
 		// basic rendering function calls
 		window.clear();			// clear the window of anything previously drawn
-		window.draw(circle);	// draw the circle
 		window.draw(text);		// draw the text
+
+		for (auto c : circles)
+		{
+			c.draw(window);
+		}
+
 		window.display();		// call the window display function
 	}
 
