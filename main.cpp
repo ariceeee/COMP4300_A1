@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 
+// CLASSES ----------------------------------------------------------------------
 class AnimCircle
 {
 	sf::CircleShape m_circle;
@@ -27,13 +28,37 @@ public:
 	}
 };
 
+class AnimRect
+{
+	sf::RectangleShape m_rect;
+	std::string m_name;
+	sf::Vector2f m_speed;
+
+public:
+	AnimRect(std::string name, sf::Vector2f pos, sf::Vector2f speed, sf::Color color, sf::Vector2f size)
+		: m_name(name)
+		, m_speed(speed)
+	{
+		m_rect.setPosition(pos);
+		m_rect.setFillColor(color);
+		m_rect.setSize(size);
+	}
+
+	void draw(sf::RenderWindow& window)
+	{
+		window.draw(m_rect);
+	}
+};
+
+// MAIN PROGRAM ------------------------------------------------------------------
+
 // vars
 sf::Font font;
 int fontSize;
 sf::Color fontColor;
 
 std::vector<AnimCircle> circles;
-std::vector<sf::RectangleShape> rects;
+std::vector<AnimRect> rects;
 
 void loadShapes(std::ifstream& fin)
 {
@@ -87,12 +112,28 @@ void loadShapes(std::ifstream& fin)
 
 			std::cout << "name: " << name << ", pos.x: " << pos.x << ", pos.y: " << pos.y << "\n";
 
-			AnimCircle c(name, pos, speed, sf::Color(r, g, b), radius);
-			circles.push_back(c);
+			AnimCircle cir(name, pos, speed, sf::Color(r, g, b), radius);
+			circles.push_back(cir);
 		}
 		else if (line.compare(RECT) == 0)
 		{
+			std::string name;
+			sf::Vector2f pos, speed, size;
+			int r, g, b;
 
+			fin >> name;
+			fin >> pos.x;
+			fin >> pos.y;
+			fin >> speed.x;
+			fin >> speed.y;
+			fin >> r;
+			fin >> g;
+			fin >> b;
+			fin >> size.x;
+			fin >> size.y;
+
+			AnimRect rec(name, pos, speed, sf::Color(r, g, b), size);
+			rects.push_back(rec);
 		}
 
 	}
@@ -170,9 +211,15 @@ int main(int argc, char* argv[])
 		window.clear();			// clear the window of anything previously drawn
 		window.draw(text);		// draw the text
 
-		for (auto c : circles)
+		// draw shapes
+		for (auto& c : circles)
 		{
 			c.draw(window);
+		}
+
+		for (auto& r : rects)
+		{
+			r.draw(window);
 		}
 
 		window.display();		// call the window display function
