@@ -3,21 +3,46 @@
 #include <fstream>
 #include <vector>
 
-void loadShapes(const std::string& fileName)
+// vars
+sf::Font font;
+int fontSize;
+sf::Color fontColor;
+
+void loadShapes(std::ifstream& fin)
 {
-	const std::string font = "Font";
-	const std::string circle = "Circle";
-	const std::string rect = "Rectangle";
+	const std::string FONT = "Font";
+	const std::string CIRCLE = "Circle";
+	const std::string RECT = "Rectangle";
 
-	/*while (fin >> line)
+	std::string line;
+
+	// as long as there's still stuff to read in
+	while (fin >> line)
 	{
-		if (line.compare(font) == 0)
+		// this line is a font
+		if (line.compare(FONT) == 0)
 		{
+			std::string fileName;
+			int r, g, b;
 
+			fin >> fileName;
+			fin >> fontSize;
+			fin >> r;
+			fin >> g;
+			fin >> b;
+
+			fontColor = sf::Color(r, g, b);
+
+			// attempt to create the font
+			if (!font.loadFromFile(fileName))
+			{
+				// if we can't load the font, print an error to the error console and exit
+				std::cerr << "Could not load font!\n";
+				exit(-1);
+			}
 		}
 
-		std::cout << line << "\n";
-	}*/
+	}
 
 }
 int main(int argc, char* argv[])
@@ -37,6 +62,8 @@ int main(int argc, char* argv[])
 	sf::RenderWindow window(sf::VideoMode(wWidth, wHeight), "Assignment 1: Bouncing Shapes");
 	window.setFramerateLimit(60);
 
+	// 2) SHAPES
+	loadShapes(fin);
 
 
 	// let's make a shape that we will draw to the screen
@@ -47,23 +74,14 @@ int main(int argc, char* argv[])
 	circle.setPosition(300.0f, 300.0f);		// set the top-left position of the circle
 	float circleMoveSpeed = 0.1f;			// we will use this to move the circle later
 
-	// let's load a font so we can display some text
-	sf::Font myFont;
-
-	// attempt to load the font from a file
-	if (!myFont.loadFromFile("fonts/tech.ttf"))
-	{
-		// if we can't load the font, print an error to the error console and exit
-		std::cerr << "Could not load font!\n";
-		exit(-1);
-	}
 
 	// set up the text object that will be drawn to the screen
-	sf::Text text("Sample Text", myFont, 24);
+	sf::Text text("Sample Text", font, fontSize);
 
 	// position the top-left corner of the text so that the text aligns on the bottom
 	// text character size is in pixels, so move the text up from the bottom by its height
 	text.setPosition(0, wHeight - (float)text.getCharacterSize());
+	text.setFillColor(fontColor);
 
 	// main loop - continues for each frame while window is open
 	while (window.isOpen())
