@@ -3,59 +3,74 @@
 #include <fstream>
 #include <vector>
 
+// global text vars
+sf::Font font;
+int fontSize;
+sf::Color fontColor;
+
 // CLASSES ----------------------------------------------------------------------
 class AnimCircle
 {
 	sf::CircleShape m_circle;
-	std::string m_name;
 	sf::Vector2f m_speed;
+	sf::Text m_text;
 
 public:
 	AnimCircle(std::string name, sf::Vector2f pos, sf::Vector2f speed, sf::Color color, int radius)
-		: m_name(name)
-		, m_speed(speed)
+		: m_speed(speed)
 	{
 		m_circle.setPosition(pos);
 		m_circle.setFillColor(color);
 		m_circle.setRadius(radius);
+
+		m_text.setString(name);
+		m_text.setFont(font);
+		m_text.setFillColor(fontColor);
+		m_text.setCharacterSize(fontSize);
+		m_text.setPosition(pos.x + radius - m_text.getLocalBounds().width / 2,
+			pos.y + radius - fontSize / 2);
 	}
 
 	void draw(sf::RenderWindow& window)
 	{
 		window.draw(m_circle);
-
-		// todo: draw shape name
+		window.draw(m_text);
 	}
 };
 
 class AnimRect
 {
 	sf::RectangleShape m_rect;
-	std::string m_name;
 	sf::Vector2f m_speed;
+	sf::Text m_text;
 
 public:
 	AnimRect(std::string name, sf::Vector2f pos, sf::Vector2f speed, sf::Color color, sf::Vector2f size)
-		: m_name(name)
-		, m_speed(speed)
+		: m_speed(speed)
 	{
 		m_rect.setPosition(pos);
 		m_rect.setFillColor(color);
 		m_rect.setSize(size);
+
+		m_text.setString(name);
+		m_text.setFont(font);
+		m_text.setFillColor(fontColor);
+		m_text.setCharacterSize(fontSize);
+		m_text.setPosition(pos.x + size.x / 2 - m_text.getLocalBounds().width / 2,
+			pos.y + size.y / 2 - fontSize / 2);
+
 	}
 
 	void draw(sf::RenderWindow& window)
 	{
 		window.draw(m_rect);
+		window.draw(m_text);
 	}
 };
 
 // MAIN PROGRAM ------------------------------------------------------------------
 
-// vars
-sf::Font font;
-int fontSize;
-sf::Color fontColor;
+
 
 std::vector<AnimCircle> circles;
 std::vector<AnimRect> rects;
@@ -110,8 +125,6 @@ void loadShapes(std::ifstream& fin)
 			fin >> b;
 			fin >> radius;
 
-			std::cout << "name: " << name << ", pos.x: " << pos.x << ", pos.y: " << pos.y << "\n";
-
 			AnimCircle cir(name, pos, speed, sf::Color(r, g, b), radius);
 			circles.push_back(cir);
 		}
@@ -158,15 +171,6 @@ int main(int argc, char* argv[])
 
 	// 2) SHAPES
 	loadShapes(fin);
-
-
-	// let's make a shape that we will draw to the screen
-	//sf::CircleShape circle(50);				// create a circle shape with radius 50
-	//circle.setFillColor(sf::Color::Green);	// set the circle color to green
-	//// how to specify rgb color: circle.setFillColor(sf::Color(r, g, b));
-
-	//circle.setPosition(300.0f, 300.0f);		// set the top-left position of the circle
-	//float circleMoveSpeed = 0.1f;			// we will use this to move the circle later
 
 	// set up the text object that will be drawn to the screen
 	sf::Text text("Sample Text", font, fontSize);
